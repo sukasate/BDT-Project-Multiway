@@ -1,0 +1,62 @@
+MASTER1
+1. MATIKAN FIREWALL (START | SETTINGS | CONTROL PANEL | WINDOWS FIREWALL | OFF)
+2. EDIT FILE MY.INI (C:\XAMPP\MYSQL\BIN\MY.INI) MENGGUNAKAN NOTEPAD
+   PADA [MYSQLD] TAMBAHKAN :
+
+	server-id=1
+	replicate-do-db=daftar
+	log-bin=mysql-bin
+	binlog-do-db=daftar
+	relay-log=C:\xampp\mysql\slave-relay.log
+	relay-log-index=C:\xampp\mysql\slave-relay-log.index
+	expire_logs_days=5
+	max_binlog_size=100M
+
+   DAN DI SIMPAN
+4. RESTART MYSQL (START|SETTINGS|CONTROL PANEL|ADMINISTRATIVE TOOLS|SERVICES|MYSQL|RESTART)
+5. JIKA ERROR MAKA ULANGI LANGKAH NO. 2
+6. MASUK KE MYSQL (START|RUN|CMD|OK)
+   C:\CD XAMPP\MYSQL\BIN (COMMAND PROMPT)
+   MYSQL -u root -p
+   PASSWORD : 
+7. MYSQL>GRANT REPLICATION SLAVE ON *.* TO 'server2'@'192.168.80.3' IDENTIFIED BY 'server2';//user, password, dan IP milik server 2
+8. MYSQL>FLUSH PRIVILEGES;
+9. MYSQL>SHOW MASTER STATUS;
+10. MYSQL>STOP SLAVE;
+11. MYSQL>
+	CHANGE MASTER TO MASTER_HOST='192.168.80.3', //IP server 2
+	MASTER_USER='server1', MASTER_PASSWORD='server1', 
+	MASTER_LOG_FILE='mysql-bin.000001', //sesuai di Server 2
+	MASTER_LOG_POS=652; // sesuai di Server 2
+12. MYSQL>START SLAVE;
+13. MYSQL>SHOW SLAVE STATUS\G;
+
+MASTER2
+1. MATIKAN FIREWALL (START | SETTINGS | CONTROL PANEL | WINDOWS FIREWALL | OFF)
+2. EDIT FILE MY.INI (C:\XAMPP\MYSQL\BIN\MY.INI) MENGGUNAKAN NOTEPAD
+   PADA [MYSQLD] TAMBAHKAN :
+	server-id=2
+	replicate-do-db=daftar
+        log-bin=mysql-bin
+        binlog-do-db=daftar
+	relay-log=C:\xampp\mysql\slave-relay.log
+        relay-log-index=C:\xampp\mysql\slave-relay-log.index
+        expire_logs_days=5
+        max_binlog_size=100M
+4. RESTART MYSQL (START|SETTINGS|CONTROL PANEL|ADMINISTRATIVE TOOLS|SERVICES|MYSQL|RESTART)
+5. JIKA ERROR MAKA ULANGI LANGKAH NO. 2
+6. MASUK KE MYSQL (START|RUN|CMD|OK)
+   C:\CD XAMPP\MYSQL\BIN (COMMAND PROMPT)
+   MYSQL -u root -p
+   PASSWORD : 
+7. MYSQL>GRANT REPLICATION SLAVE ON *.* TO 'server1'@'192.168.80.2' IDENTIFIED BY 'server1';//user, password, dan IP milik server 1
+8. MYSQL>FLUSH PRIVILEGES;
+9. MYSQL>SHOW MASTER STATUS;
+10. MYSQL>STOP SLAVE;
+11. MYSQL>
+	CHANGE MASTER TO MASTER_HOST='192.168.80.2', //IP Server 1
+	MASTER_USER='server2', MASTER_PASSWORD='server2',
+	MASTER_LOG_FILE='mysql-bin.000001', // sesuai di Server 1
+	MASTER_LOG_POS=652;// sesuai di Server 1
+12. MYSQL>START SLAVE;
+13. MYSQL>SHOW SLAVE STATUS\G;
